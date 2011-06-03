@@ -361,8 +361,8 @@ module ActiveRecord
         
         # === SQLServer Specific (Selecting) ============================ #
 
-        def raw_select(sql, name=nil, binds=[], options={})
-          sql.gsub!(/\.`(.*)` /, ".[\\1] ")
+        def raw_select(sql, name='SQL', binds=[], options={})
+          sql.gsub!(/\.`[^`]` /, ".[\\1] ")
           log(sql,name,binds) { _raw_select(sql, options) }
         end
         
