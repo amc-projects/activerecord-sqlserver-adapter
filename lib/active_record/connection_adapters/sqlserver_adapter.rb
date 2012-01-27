@@ -1,4 +1,5 @@
 require 'arel/visitors/sqlserver'
+require 'active_record/connection_adapters/abstract/connection_pool'
 require 'active_record'
 require 'active_record/connection_adapters/abstract_adapter'
 require 'active_record/connection_adapters/sqlserver/core_ext/active_record'
