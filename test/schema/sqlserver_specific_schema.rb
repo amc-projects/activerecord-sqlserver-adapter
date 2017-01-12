@@ -102,26 +102,53 @@ ActiveRecord::Schema.define do
       /*#{'x'*4000}}*/
       FROM string_defaults
   STRINGDEFAULTSBIGVIEW
+
+
+  # Another schema.
+  create_table :sql_server_schema_columns, :force => true do |t|
+    t.column :field1 , :integer
+  end
+  execute "IF NOT EXISTS(SELECT * FROM sys.schemas WHERE name = 'test') EXEC sp_executesql N'CREATE SCHEMA test'"
+  execute "IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sql_server_schema_columns' and TABLE_SCHEMA = 'test') DROP TABLE test.sql_server_schema_columns"
+  execute <<-SIMILIARTABLEINOTHERSCHEMA
+    CREATE TABLE test.sql_server_schema_columns(
+    	id int IDENTITY NOT NULL primary key,
+    	filed_1 int,	
+    	field_2 int,
+    	name varchar(255),
+    	description varchar(1000),
+    	n_name nvarchar(255),
+    	n_description nvarchar(1000)
+    )
+  SIMILIARTABLEINOTHERSCHEMA
+  execute "IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sql_server_schema_identity' and TABLE_SCHEMA = 'test') DROP TABLE test.sql_server_schema_identity"
+  execute <<-SIMILIARTABLEINOTHERSCHEMA
+    CREATE TABLE test.sql_server_schema_identity(
+    	id int IDENTITY NOT NULL primary key,
+    	filed_1 int
+    )
+  SIMILIARTABLEINOTHERSCHEMA
   
+  
+  # Azure needs clustered indexes
   if sqlserver_azure?
-    # Azure needs clustered indexes.
-    execute "CREATE CLUSTERED INDEX [idx_schema_migrations_version] ON [schema_migrations] ([version])"
-    execute "CREATE CLUSTERED INDEX [idx_countries_ctryid] ON [countries] ([country_id])"
-    execute "CREATE CLUSTERED INDEX [idx_treaty_id_trtyid] ON [treaties] ([treaty_id])"
-    execute "CREATE CLUSTERED INDEX [idx_no_pk_data_name] ON [no_pk_data] ([name])"
-    execute "CREATE CLUSTERED INDEX [idx_developers_projects_did_pid] ON [developers_projects] ([developer_id],[project_id])"
-    execute "CREATE CLUSTERED INDEX [idx_categories_posts_cid_pid] ON [categories_posts] ([category_id],[post_id])"
-    execute "CREATE CLUSTERED INDEX [idx_dashboards_dashboard_id] ON [dashboards] ([dashboard_id])"
-    execute "CREATE CLUSTERED INDEX [idx_edges_source_id_sink_id] ON [edges] ([source_id],[sink_id])"
-    execute "CREATE CLUSTERED INDEX [idx_goofy_string_id_id] ON [goofy_string_id] ([id])"
-    execute "CREATE CLUSTERED INDEX [idx_lessons_students_lid_sid] ON [lessons_students] ([lesson_id],[student_id])"
-    execute "CREATE CLUSTERED INDEX [idx_mateys_pid_tid] ON [mateys] ([pirate_id],[target_id])"
-    execute "CREATE CLUSTERED INDEX [idx_minivans_minivan_id] ON [minivans] ([minivan_id])"
-    execute "CREATE CLUSTERED INDEX [idx_parrots_pirates_paid_pid] ON [parrots_pirates] ([parrot_id],[pirate_id])"  
-    execute "CREATE CLUSTERED INDEX [idx_parrots_treasures_pid_tid] ON [parrots_treasures] ([parrot_id],[treasure_id])"  
-    execute "CREATE CLUSTERED INDEX [idx_speedometers_speedometer_id] ON [speedometers] ([speedometer_id])"
-    execute "CREATE CLUSTERED INDEX [idx_subscribers_nick] ON [subscribers] ([nick])"
-    execute "CREATE CLUSTERED INDEX [idx_countries_treaties_cid_tid] ON [countries_treaties] ([country_id],[treaty_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_schema_migrations_version') CREATE CLUSTERED INDEX [idx_schema_migrations_version] ON [schema_migrations] ([version])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_countries_ctryid') CREATE CLUSTERED INDEX [idx_countries_ctryid] ON [countries] ([country_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_treaty_id_trtyid') CREATE CLUSTERED INDEX [idx_treaty_id_trtyid] ON [treaties] ([treaty_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_no_pk_data_name') CREATE CLUSTERED INDEX [idx_no_pk_data_name] ON [no_pk_data] ([name])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_developers_projects_did_pid') CREATE CLUSTERED INDEX [idx_developers_projects_did_pid] ON [developers_projects] ([developer_id],[project_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_categories_posts_cid_pid') CREATE CLUSTERED INDEX [idx_categories_posts_cid_pid] ON [categories_posts] ([category_id],[post_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_dashboards_dashboard_id') CREATE CLUSTERED INDEX [idx_dashboards_dashboard_id] ON [dashboards] ([dashboard_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_edges_source_id_sink_id') CREATE CLUSTERED INDEX [idx_edges_source_id_sink_id] ON [edges] ([source_id],[sink_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_goofy_string_id_id') CREATE CLUSTERED INDEX [idx_goofy_string_id_id] ON [goofy_string_id] ([id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_lessons_students_lid_sid') CREATE CLUSTERED INDEX [idx_lessons_students_lid_sid] ON [lessons_students] ([lesson_id],[student_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_mateys_pid_tid') CREATE CLUSTERED INDEX [idx_mateys_pid_tid] ON [mateys] ([pirate_id],[target_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_minivans_minivan_id') CREATE CLUSTERED INDEX [idx_minivans_minivan_id] ON [minivans] ([minivan_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_parrots_pirates_paid_pid') CREATE CLUSTERED INDEX [idx_parrots_pirates_paid_pid] ON [parrots_pirates] ([parrot_id],[pirate_id])"  
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_parrots_treasures_pid_tid') CREATE CLUSTERED INDEX [idx_parrots_treasures_pid_tid] ON [parrots_treasures] ([parrot_id],[treasure_id])"  
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_speedometers_speedometer_id') CREATE CLUSTERED INDEX [idx_speedometers_speedometer_id] ON [speedometers] ([speedometer_id])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_subscribers_nick') CREATE CLUSTERED INDEX [idx_subscribers_nick] ON [subscribers] ([nick])"
+    execute "IF NOT EXISTS (SELECT [name] FROM [sys].[indexes] WHERE [name] = N'idx_countries_treaties_cid_tid') CREATE CLUSTERED INDEX [idx_countries_treaties_cid_tid] ON [countries_treaties] ([country_id],[treaty_id])"
   end
   
 end

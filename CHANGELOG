@@ -1,5 +1,42 @@
 
-* 3.0.13 *
+* 3.0.19 *
+
+* Create a #configure_connection method that can be overridden. Think "SET TEXTSIZE...".
+
+* Create a #configure_application_name method that can be overridden for unique TinyTDS app names
+  to show up in SQL Server's activity monitor.
+
+* Fixed the #finish_statement_handle to cancel the TinyTDS connection if needed.
+
+* Fix the #indexes method to fail gracefully if sp_helptext permissions fail.
+
+
+
+* 3.0.18 *
+
+* Make #rollback_db_transaction smarter.
+
+
+* 3.0.17 *
+
+* Allow :limit/:offset to be used with fully qualified table and column in :select.
+
+* Fix test_count_explicit_columns.
+
+
+* 3.0.16 *
+
+* Allow complex order objects to not be molested by our visitor overrides. Fixes #99
+
+
+* 3.0.15 *
+
+* Way better schema support! Thanks to @ianic! Fixes #61
+
+* Warn of possible permission problems if "EXEC sp_helptext..." does not work view. Fixes #73.
+
+
+* 3.0.13/3.0.14 *
 
 * Allow TinyTDS/DBLIB mode to pass down :host/:port config options.
 

@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform      = Gem::Platform::RUBY
   s.name          = "activerecord-sqlserver-adapter"
-  s.version       = "3.0.14"
+  s.version       = "3.0.19"
   s.summary       = "SQL Server 2005 and 2008 Adapter For ActiveRecord."
   s.description   = "SQL Server 2005 and 2008 Adapter For ActiveRecord"
   
@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   
   s.files         = Dir['CHANGELOG', 'MIT-LICENSE', 'README.rdoc', 'lib/**/*' ]
   s.require_path  = 'lib'
-  s.has_rdoc      = true
   s.extra_rdoc_files = ['README.rdoc']
   s.rdoc_options.concat ['--main',  'README.rdoc']
   s.rubyforge_project = 'activerecord-sqlserver-adapter'

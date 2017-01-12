@@ -41,6 +41,8 @@ module Arel
           table = Arel::Table.new(x.relation.table_alias || x.relation.name)
           expr = table[x.name]
           Arel::Nodes::Ordering.new expr
+        when Arel::Nodes::Ordering
+          x
         when String
           x.split(',').map do |s|
             expr, direction = s.split
@@ -247,7 +249,7 @@ module Arel
         core = o.cores.first
         core.projections.size == 1 &&
           Arel::Nodes::Count === core.projections.first &&
-          (o.limit || !core.wheres.empty?) &&
+          o.limit &&
           !join_in_select_statement?(o)
       end
 
@@ -283,7 +285,7 @@ module Arel
           core.projections.map do |x|
             x.dup.tap do |p|
               p.sub! 'DISTINCT', "DISTINCT #{visit(o.limit)}".strip if o.limit
-              p.sub! /\[#{tn}\]\./, '[__rnt].'
+              p.gsub! /\[?#{tn}\]?\./, '[__rnt].'
               p.strip!
             end
           end
@@ -291,12 +293,9 @@ module Arel
           core.projections.map do |x|
             Arel.sql x.split(',').map{ |y| y.split(' AS ').last.strip }.join(', ')
           end
-        elsif function_select_statement?(o)
-          # TODO: [ARel 2.2] Use Arel.star
-          [Arel.sql('*')]
         else
-          tn = table_from_select_statement(o).name
-          core.projections.map { |x| x.gsub /\[#{tn}\]\./, '[__rnt].' }
+          # TODO: [ARel 2.2] Use Arel.star
+          [Arel.sql('[__rnt].*')]
         end
       end
 
